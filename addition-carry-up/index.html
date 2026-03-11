@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaya's Math Attack - Addition</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #fff9f0; touch-action: manipulation; }
+        #status-bar { width: 90%; display: flex; justify-content: space-between; font-size: 1.2rem; color: #555; margin-bottom: 10px; max-width: 400px; }
+        #question { font-size: 6rem; font-weight: bold; color: #e67e22; margin-bottom: 20px; }
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 90%; max-width: 400px; }
+        .key { 
+            padding: 25px; font-size: 2.5rem; font-weight: bold; cursor: pointer; 
+            background: white; color: #e67e22; border: 3px solid #e67e22; border-radius: 15px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .key:active { background: #e67e22; color: white; }
+        .key.zero { grid-column: span 3; padding: 15px; } /* 0が必要な場合用 */
+        
+        #overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fff9f0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; text-align: center; }
+        #start-btn, #retry-btn { padding: 20px 40px; font-size: 2rem; cursor: pointer; background: #f1c40f; color: white; border: none; border-radius: 15px; box-shadow: 0 4px #d4ac0d; }
+        #start-btn:active { box-shadow: none; transform: translateY(4px); }
+        #result-display { font-size: 2rem; color: #2c3e50; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div id="overlay">
+        <div id="result-display">くりあがり 36もん<br>ぜんぶとけるかな？</div>
+        <button id="start-btn">スタート！</button>
+    </div>
+
+    <div id="status-bar">
+        <div id="timerDisplay">タイム: 0.0秒</div>
+        <div id="progressDisplay">のこり: 36もん</div>
+    </div>
+    <div id="question">?+?</div>
+    
+    <div class="keypad">
+        <div class="key" onclick="checkAnswer(10)">10</div>
+        <div class="key" onclick="checkAnswer(11)">11</div>
+        <div class="key" onclick="checkAnswer(12)">12</div>
+        <div class="key" onclick="checkAnswer(13)">13</div>
+        <div class="key" onclick="checkAnswer(14)">14</div>
+        <div class="key" onclick="checkAnswer(15)">15</div>
+        <div class="key" onclick="checkAnswer(16)">16</div>
+        <div class="key" onclick="checkAnswer(17)">17</div>
+        <div class="key" onclick="checkAnswer(18)">18</div>
+    </div>
+
+    <script>
+        let problems = [];
+        let currentProblem = null;
+        let startTime = 0;
+        let timerInterval = null;
+
+        const questionEl = document.getElementById('question');
+        const timerEl = document.getElementById('timerDisplay');
+        const progressEl = document.getElementById('progressDisplay');
+        const overlay = document.getElementById('overlay');
+        const startBtn = document.getElementById('start-btn');
+        const resultDisplay = document.getElementById('result-display');
+
+        function initProblems() {
+            problems = [];
+            for (let i = 2; i <= 9; i++) {
+                for (let j = 2; j <= 9; j++) {
+                    if (i + j >= 10 && i + j <= 18) {
+                        problems.push({q: `${i} + ${j}`, a: i + j});
+                    }
+                }
+            }
+        }
+
+        function askNextQuestion() {
+            if (problems.length === 0) {
+                finishGame();
+                return;
+            }
+            
+            progressEl.textContent = `のこり: ${problems.length}もん`;
+            const index = Math.floor(Math.random() * problems.length);
+            currentProblem = problems[index];
+            problems.splice(index, 1);
+
+            questionEl.textContent = currentProblem.q;
+            
+            // 読み上げを「たす」に修正
+            const uttr = new SpeechSynthesisUtterance(currentProblem.q.replace('+', 'たす') + 'は？');
+            uttr.lang = 'ja-JP';
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(uttr);
+        }
+
+        function checkAnswer(num) {
+            if (num === currentProblem.a) {
+                const correctUttr = new SpeechSynthesisUtterance("せいかい！");
+                window.speechSynthesis.speak(correctUttr);
+                askNextQuestion();
+            } else {
+                const wrongUttr = new SpeechSynthesisUtterance("ちがうよ");
+                window.speechSynthesis.speak(wrongUttr);
+            }
+        }
+
+        function finishGame() {
+            clearInterval(timerInterval);
+            const totalTime = ((performance.now() - startTime) / 1000).toFixed(1);
+            resultDisplay.innerHTML = `ぜんもんせいかい！✨<br>タイム: ${totalTime}びょう`;
+            startBtn.textContent = "もういっかい！";
+            overlay.style.display = 'flex';
+        }
+
+        startBtn.onclick = () => {
+            initProblems();
+            overlay.style.display = 'none';
+            startTime = performance.now();
+            timerInterval = setInterval(() => {
+                const elapsed = ((performance.now() - startTime) / 1000).toFixed(1);
+                timerEl.textContent = `タイム: ${elapsed}秒`;
+            }, 100);
+            askNextQuestion();
+        };
+    </script>
+</body>
+</html>
