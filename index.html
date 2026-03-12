@@ -1,63 +1,100 @@
-</ul>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>計算ドリル目次</title>
+    <title>Kaya's Home Edu Apps</title>
     <style>
         body {
             font-family: 'Hiragino Sans', 'Meiryo', sans-serif;
-            background-color: #f0f8ff;
+            background-color: #f8fafc;
             padding: 40px 20px;
             text-align: center;
+            margin: 0;
         }
         h1 {
-            font-size: 2.5em;
-            color: #333;
+            font-size: 2.2em;
+            color: #1e293b;
             margin-bottom: 40px;
+        }
+        h2 {
+            font-size: 1.8em;
+            color: #64748b;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #e2e8f0;
+            display: inline-block;
+            padding: 0 20px;
         }
         ul {
             list-style: none;
             padding: 0;
-            max-width: 400px;
+            max-width: 450px;
             margin: 0 auto;
         }
         li {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
         a {
             display: block;
-            font-size: 2.2em; /* 大きく */
+            font-size: 1.8em;
             font-weight: bold;
             color: white;
-            background: linear-gradient(45deg, #ff6b6b, #ffd93d); /* 明るいグラデーション */
             text-decoration: none;
-            padding: 25px 40px;
-            border-radius: 20px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            transition: all 0.3s ease;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            padding: 25px 30px;
+            border-radius: 25px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
         }
+        
+        /* さんすうセクション（暖色） */
+        .btn-math {
+            background: linear-gradient(45deg, #ff6b6b, #f0932b);
+        }
+        
+        /* えいごセクション（寒色） */
+        .btn-english {
+            background: linear-gradient(45deg, #4834d4, #686de0);
+        }
+
+        /* 準備中セクション（ニュートラル） */
+        .btn-future {
+            background: linear-gradient(45deg, #95afc0, #535c68);
+            font-size: 1.2em;
+            opacity: 0.8;
+        }
+
         a:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.3);
-            background: linear-gradient(45deg, #ff8e8e, #ffe066);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.2);
+            filter: brightness(1.1);
         }
+
         @media (max-width: 600px) {
-            a {
-                font-size: 1.8em;
-                padding: 20px 30px;
-            }
+            a { font-size: 1.5em; padding: 20px; }
+            h1 { font-size: 1.8em; }
         }
     </style>
 </head>
 <body>
-    <h1>計算ドリル</h1>
+    <h1>おうちでおべんきょう</h1>
+
+    <h2>さんすう</h2>
     <ul>
-        <li><a href="./subtraction-carry-down/">ひきざん（くりさがり）</a></li>
-        <li><a href="./addition-carry-up/">たしざん（くりあがり）</a></li>
-        <li><a href="./future-task/">つぎのドリル（準備中）</a></li>
+        <li><a href="./addition-carry-up/" class="btn-math">たしざん<br>(くりあがり)</a></li>
+        <li><a href="./subtraction-carry-down/" class="btn-math">ひきざん<br>(くりさがり)</a></li>
     </ul>
+
+    <h2>えいご</h2>
+    <ul>
+        <li><a href="./english-alphabet-abc/" class="btn-english">ABCアタック<br>(えもじ)</a></li>
+    </ul>
+
+    <h2>これから</h2>
+    <ul>
+        <li><a href="#" class="btn-future">つぎはなにかな？<br>(じゅんびちゅう)</a></li>
+    </ul>
+
 </body>
 </html>
