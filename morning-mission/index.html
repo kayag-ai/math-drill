@@ -1,217 +1,359 @@
-<!DOCTYPE html>  
-<html lang="ja">  
-<head>  
- <meta charset="UTF-8">  
- <meta name="viewport" content="width=device-width, initial-scale=1.0">  
- <title>Morning Mission</title>  
- <style>  
- body { 
-  font-family: 'Helvetica Neue', Arial, sans-serif; 
-  display: flex; 
-  flex-direction: column; 
-  align-items: center; 
-  min-height: 100vh;
-  margin: 0; 
-  padding: 20px 0;
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); 
-  touch-action: manipulation; 
-  overflow-y: auto;
- }  
-   
- #header { text-align: center; margin-bottom: 10px; }  
- #main-title { font-size: 2rem; font-weight: 900; color: #0369a1; text-shadow: 2px 2px 0px white; margin: 0; }  
- #sub-title { font-size: 0.9rem; color: #0ea5e9; font-weight: bold; }  
-  
- #clock-container { font-size: 2.8rem; font-weight: 900; color: #1e293b; margin: 5px 0; letter-spacing: 2px; }  
- #timer-display { font-size: 1.8rem; color: #ef4444; font-weight: bold; margin-bottom: 10px; min-height: 1.2em; }  
-   
- #progress-container { width: 85%; height: 24px; background: #e2e8f0; border-radius: 20px; overflow: hidden; margin-bottom: 20px; border: 4px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); flex-shrink: 0; }  
- #progress-bar { height: 100%; width: 100%; background: #22c55e; transition: width 1s linear; }  
-  
- .task-list { 
-  width: 95%;
-  max-width: 400px;
-  margin: 0 auto;
-  display: grid; 
-  grid-template-columns: repeat(2, 1fr); 
-  gap: 12px; 
-  padding: 10px;
-  box-sizing: border-box;
- }  
+<!DOCTYPE html>
+<html lang="ja">
 
- .task-item {   
-  background: white; 
-  aspect-ratio: 1 / 1;
-  border-radius: 18px;   
-  display: flex; 
-  flex-direction: column; 
-  align-items: center; 
-  justify-content: center;
-  font-size: 1.1rem; 
-  font-weight: bold;  
-  box-shadow: 0 5px 0px #cbd5e1; 
-  cursor: pointer; 
-  transition: all 0.1s;  
-  border: 2px solid transparent;
-  box-sizing: border-box;
-  text-align: center;
- }
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Morning Mission</title>
+ <style>
+  body {
+   font-family: 'Helvetica Neue', Arial, sans-serif;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   min-height: 100vh;
+   margin: 0;
+   padding: 20px 0;
+   background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+   touch-action: manipulation;
+   overflow-y: auto;
+  }
+  
+  #header {
+   text-align: center;
+   margin-bottom: 10px;
+  }
+  
+  #main-title {
+   font-size: 2rem;
+   font-weight: 900;
+   color: #0369a1;
+   text-shadow: 2px 2px 0px white;
+   margin: 0;
+  }
+  
+  #sub-title {
+   font-size: 0.9rem;
+   color: #0ea5e9;
+   font-weight: bold;
+  }
+  
+  #clock-container {
+   font-size: 2.8rem;
+   font-weight: 900;
+   color: #1e293b;
+   margin: 5px 0;
+   letter-spacing: 2px;
+  }
+  
+  #timer-display {
+   font-size: 1.8rem;
+   color: #ef4444;
+   font-weight: bold;
+   margin-bottom: 10px;
+   min-height: 1.2em;
+  }
+  
+  #progress-container {
+   width: 85%;
+   height: 24px;
+   background: #e2e8f0;
+   border-radius: 20px;
+   overflow: hidden;
+   margin-bottom: 20px;
+   border: 4px solid #fff;
+   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+   flex-shrink: 0;
+  }
+  
+  #progress-bar {
+   height: 100%;
+   width: 100%;
+   background: #22c55e;
+   transition: width 1s linear;
+  }
+  
+  .task-list {
+   width: 95%;
+   max-width: 400px;
+   margin: 0 auto;
+   display: grid;
+   grid-template-columns: repeat(2, 1fr);
+   gap: 12px;
+   padding: 10px;
+   box-sizing: border-box;
+  }
+  
+  .task-item {
+   background: white;
+   aspect-ratio: 1 / 1;
+   border-radius: 18px;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+   font-size: 1.1rem;
+   font-weight: bold;
+   box-shadow: 0 5px 0px #cbd5e1;
+   cursor: pointer;
+   transition: all 0.1s;
+   border: 2px solid transparent;
+   box-sizing: border-box;
+   text-align: center;
+  }
+  
+  .task-item:active {
+   transform: translateY(3px);
+   box-shadow: 0 2px 0px #cbd5e1;
+  }
+  
+  .task-item.done {
+   background: #d1fae5;
+   color: #10b981;
+   text-decoration: line-through;
+   opacity: 0.7;
+   box-shadow: none;
+   transform: translateY(3px);
+   border-color: #10b981;
+  }
+  
+  .task-icon {
+   font-size: 2rem;
+   margin-bottom: 5px;
+   pointer-events: none;
+  }
+  
+  .task-text {
+   pointer-events: none;
+  }
+  
+  #test-mode-container {
+   margin: 20px 0;
+  }
+  
+  #test-start-btn {
+   padding: 12px 25px;
+   font-size: 1.1rem;
+   border-radius: 50px;
+   border: 2px solid #0ea5e9;
+   background: white;
+   color: #0ea5e9;
+   font-weight: bold;
+   cursor: pointer;
+  }
+  
+  #result-overlay {
+   position: fixed;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   background: rgba(255, 255, 255, 0.98);
+   display: none;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+   z-index: 10;
+   text-align: center;
+  }
+  
+  .result-emoji {
+   font-size: 6rem;
+  }
+  
+  .result-text {
+   font-size: 1.8rem;
+   font-weight: bold;
+   margin: 20px;
+   white-space: pre-wrap;
+   color: #0369a1;
+  }
+  
+  #retry-btn {
+   padding: 15px 45px;
+   font-size: 1.6rem;
+   border-radius: 20px;
+   border: none;
+   background: #0ea5e9;
+   color: white;
+   box-shadow: 0 6px #0284c7;
+   font-weight: bold;
+  }
+ </style>
+</head>
 
- .task-item:active { transform: translateY(3px); box-shadow: 0 2px 0px #cbd5e1; }  
- .task-item.done { background: #d1fae5; color: #10b981; text-decoration: line-through; opacity: 0.7; box-shadow: none; transform: translateY(3px); border-color: #10b981; }  
- .task-icon { font-size: 2rem; margin-bottom: 5px; pointer-events: none; }  
- .task-text { pointer-events: none; }  
+<body>
+ 
+ <div id="header">
+  <p id="sub-title">＼ きょうも かっこよく ／</p>
+  <h1 id="main-title">あさのミッション！</h1>
+ </div>
+ 
+ <div id="clock-container">00:00:00</div>
+ <div id="timer-display">準備中...</div>
+ 
+ <div id="progress-container">
+  <div id="progress-bar"></div>
+ </div>
+ 
+ <div class="task-list" id="task-list">
+  <div class="task-item" onclick="toggleTask(this)"><span class="task-icon">🍚</span><span class="task-text">あさごはん</span></div>
+  <div class="task-item" onclick="toggleTask(this)"><span class="task-icon">🚽</span><span class="task-text">トイレ</span></div>
+  <div class="task-item" onclick="toggleTask(this)"><span class="task-icon">🪥</span><span class="task-text">はみがき</span></div>
+  <div class="task-item" onclick="toggleTask(this)"><span class="task-icon">👕</span><span class="task-text">きがえ</span></div>
+ </div>
+ 
+ <div id="test-mode-container">
+  <button id="test-start-btn" onclick="startTest()">🚀 れんしゅうモード</button>
+ </div>
+ 
+ <div id="result-overlay">
+  <div class="result-emoji" id="res-emoji"></div>
+  <div class="result-text" id="res-text"></div>
+  <button id="retry-btn" onclick="location.reload()">おわり</button>
+ </div>
+ 
+ <script>
+  const TARGET_HOUR = 7;
+  const TARGET_MIN = 45;
+  const START_MIN = 30;
+  const TOTAL_SECONDS = (TARGET_MIN - START_MIN) * 60;
   
- #test-mode-container { margin: 20px 0; }  
- #test-start-btn { padding: 12px 25px; font-size: 1.1rem; border-radius: 50px; border: 2px solid #0ea5e9; background: white; color: #0ea5e9; font-weight: bold; cursor: pointer; }  
+  let isTestMode = false;
+  let testEndTime = null;
   
- #result-overlay {   
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;   
-  background: rgba(255, 255, 255, 0.98); display: none;   
-  flex-direction: column; align-items: center; justify-content: center; z-index: 10; text-align: center;  
- }  
- .result-emoji { font-size: 6rem; }  
- .result-text { font-size: 1.8rem; font-weight: bold; margin: 20px; white-space: pre-wrap; color: #0369a1; }  
- #retry-btn { padding: 15px 45px; font-size: 1.6rem; border-radius: 20px; border: none; background: #0ea5e9; color: white; box-shadow: 0 6px #0284c7; font-weight: bold; }  
- </style>  
-</head>  
-<body>  
+  const clockEl = document.getElementById('clock-container');
+  const timerEl = document.getElementById('timer-display');
+  const progressBar = document.getElementById('progress-bar');
+  const overlay = document.getElementById('result-overlay');
+  const resEmoji = document.getElementById('res-emoji');
+  const resText = document.getElementById('res-text');
+  const testBtnContainer = document.getElementById('test-mode-container');
   
- <div id="header">  
-  <p id="sub-title">＼ きょうも かっこよく ／</p>  
-  <h1 id="main-title">あさのミッション！</h1>  
- </div>  
-  
- <div id="clock-container">00:00:00</div>  
- <div id="timer-display">準備中...</div>  
+  function update() {
+   const now = new Date();
+   clockEl.textContent = now.toLocaleTimeString('ja-JP', { hour12: false });
    
- <div id="progress-container">  
-  <div id="progress-bar"></div>  
- </div>  
-  
- <div class="task-list" id="task-list">  
-  <div class="task-item" onclick="toggleTask(this)"><span class="task-icon">🍚</span><span class="task-text">あさごはん</span></div>  
-  <div class="task-item" onclick="toggleTask(this)"><span class="task-icon">🚽</span><span class="task-text">トイレ</span></div>  
-  <div class="task-item" onclick="toggleTask(this)"><span class="task-icon">🪥</span><span class="task-text">はみがき</span></div>  
-  <div class="task-item" onclick="toggleTask(this)"><span class="task-icon">👕</span><span class="task-text">きがえ</span></div>  
- </div>  
-  
- <div id="test-mode-container">  
-  <button id="test-start-btn" onclick="startTest()">🚀 れんしゅうモード</button>  
- </div>  
-  
- <div id="result-overlay">  
-  <div class="result-emoji" id="res-emoji"></div>  
-  <div class="result-text" id="res-text"></div>  
-  <button id="retry-btn" onclick="location.reload()">おわり</button>  
- </div>  
-  
- <script>  
- const TARGET_HOUR = 7;  
- const TARGET_MIN = 45;  
- const START_MIN = 30;  
- const TOTAL_SECONDS = (TARGET_MIN - START_MIN) * 60;  
-  
- let isTestMode = false;  
- let testEndTime = null;  
-  
- const clockEl = document.getElementById('clock-container');  
- const timerEl = document.getElementById('timer-display');  
- const progressBar = document.getElementById('progress-bar');  
- const overlay = document.getElementById('result-overlay');  
- const resEmoji = document.getElementById('res-emoji');  
- const resText = document.getElementById('res-text');  
- const testBtnContainer = document.getElementById('test-mode-container');  
-  
- function update() {  
-  const now = new Date();  
-  clockEl.textContent = now.toLocaleTimeString('ja-JP', { hour12: false });  
-  
-  if (isTestMode) {  
-   runTimerLogic(testEndTime - now);  
-   return;  
-  }  
-  
-  const currentTotalMin = now.getHours() * 60 + now.getMinutes();  
-  const startLimit = TARGET_HOUR * 60 + START_MIN;  
-  const endLimit = TARGET_HOUR * 60 + TARGET_MIN;  
-  
-  if (currentTotalMin >= startLimit && currentTotalMin < endLimit) {  
-   testBtnContainer.style.display = 'none';  
-   const deadline = new Date();  
-   deadline.setHours(TARGET_HOUR, TARGET_MIN, 0);  
-   runTimerLogic(deadline - now);  
-  } else {  
-   timerEl.textContent = "待機中...";  
-   timerEl.style.color = "#94a3b8";  
-   progressBar.style.width = "100%";  
-   progressBar.style.background = "#cbd5e1";  
-   testBtnContainer.style.display = 'block';  
-  }  
- }  
-  
- function runTimerLogic(diffMs) {  
-  const remainingSec = Math.floor(diffMs / 1000);  
-  if (remainingSec <= 0) {  
-   checkFinish(false);  
-  } else {  
-   const m = Math.floor(remainingSec / 60);  
-   const s = remainingSec % 60;  
-   timerEl.textContent = `あと ${m}:${s.toString().padStart(2, '0')}`;  
-   timerEl.style.color = "#ef4444";  
-   const percent = (remainingSec / TOTAL_SECONDS) * 100;  
-   progressBar.style.width = `${percent}%`;  
-   progressBar.style.background = percent < 20 ? '#ef4444' : '#22c55e';  
-  }  
- }  
-  
- function startTest() {  
-  isTestMode = true;  
-  testBtnContainer.style.display = 'none';  
-  testEndTime = new Date(new Date().getTime() + TOTAL_SECONDS * 1000);  
-  speak("練習モード、スタート！");  
- }  
-  
- function toggleTask(el) {  
-  if (overlay.style.display === 'flex') return;  
+   if (isTestMode) {
+    runTimerLogic(testEndTime - now);
+    return;
+   }
    
-  const isDone = el.classList.toggle('done');  
-  if (isDone) {  
-   const textOnly = el.querySelector('.task-text').textContent;  
-   speak(textOnly + "、できたね！");  
-  }  
+   const currentTotalMin = now.getHours() * 60 + now.getMinutes();
+   const startLimit = TARGET_HOUR * 60 + START_MIN;
+   const endLimit = TARGET_HOUR * 60 + TARGET_MIN;
    
-  const allTasks = document.querySelectorAll('.task-item');  
-  const doneTasks = document.querySelectorAll('.task-item.done');  
-  if (allTasks.length === doneTasks.length) {  
-   checkFinish(true);  
-  }  
- }  
+   if (currentTotalMin >= startLimit && currentTotalMin < endLimit) {
+    testBtnContainer.style.display = 'none';
+    const deadline = new Date();
+    deadline.setHours(TARGET_HOUR, TARGET_MIN, 0);
+    runTimerLogic(deadline - now);
+   } else {
+    timerEl.textContent = "待機中...";
+    timerEl.style.color = "#94a3b8";
+    progressBar.style.width = "100%";
+    progressBar.style.background = "#cbd5e1";
+    testBtnContainer.style.display = 'block';
+   }
+  }
   
- function checkFinish(isSuccess) {  
-  clearInterval(interval);  
-  overlay.style.display = 'flex';  
-  if (isSuccess) {  
-   resEmoji.textContent = "💖😸🏆";  
-   resText.textContent = "ミッションコンプリート！\nきみは最高だ！";  
-   speak("おめでとう！ミッションクリア！君は素敵な魔法少女だね！");  
-  } else {  
-   resEmoji.textContent = "🤖💩🙀";  
-   resText.textContent = "タイムアップ！\nあしたはもっとパワーがたまるよ！";  
-   speak("タイムアップ！明日の挑戦も待ってるよ！");  
-  }  
- }  
+  function runTimerLogic(diffMs) {
+   const remainingSec = Math.floor(diffMs / 1000);
+   if (remainingSec <= 0) {
+    checkFinish(false);
+   } else {
+    const m = Math.floor(remainingSec / 60);
+    const s = remainingSec % 60;
+    timerEl.textContent = `あと ${m}:${s.toString().padStart(2, '0')}`;
+    timerEl.style.color = "#ef4444";
+    const percent = (remainingSec / TOTAL_SECONDS) * 100;
+    progressBar.style.width = `${percent}%`;
+    progressBar.style.background = percent < 20 ? '#ef4444' : '#22c55e';
+   }
+  }
   
- function speak(text) {  
-  const uttr = new SpeechSynthesisUtterance(text);  
-  uttr.lang = 'ja-JP';  
-  uttr.rate = 1.2;  
-  window.speechSynthesis.cancel();  
-  window.speechSynthesis.speak(uttr);  
- }  
+  function startTest() {
+   isTestMode = true;
+   testBtnContainer.style.display = 'none';
+   testEndTime = new Date(new Date().getTime() + TOTAL_SECONDS * 1000);
+   speak("練習モード、スタート！");
+  }
   
- const interval = setInterval(update, 1000);  
- update();  
- </script>  
-</body>  
+  function toggleTask(el) {
+   if (overlay.style.display === 'flex') return;
+   
+   const isDone = el.classList.toggle('done');
+   if (isDone) {
+    const textOnly = el.querySelector('.task-text').textContent;
+    speak(textOnly + "、できたね！");
+   }
+   
+   const allTasks = document.querySelectorAll('.task-item');
+   const doneTasks = document.querySelectorAll('.task-item.done');
+   if (allTasks.length === doneTasks.length) {
+    checkFinish(true);
+   }
+  }
+  
+  function checkFinish(isSuccess) {
+   clearInterval(interval);
+   overlay.style.display = 'flex';
+   if (isSuccess) {
+    resEmoji.textContent = "💖😸🏆";
+    resText.textContent = "ミッションコンプリート！\nきみは最高だ！";
+    speak("おめでとう！ミッションクリア！君は素敵な魔法少女だね！");
+   } else {
+    resEmoji.textContent = "🤖💩🙀";
+    resText.textContent = "タイムアップ！\nあしたはもっとパワーがたまるよ！";
+    speak("タイムアップ！明日の挑戦も待ってるよ！");
+   }
+  }
+  
+  function speak(text) {
+   const uttr = new SpeechSynthesisUtterance(text);
+   uttr.lang = 'ja-JP';
+   uttr.rate = 1.2;
+   window.speechSynthesis.cancel();
+   window.speechSynthesis.speak(uttr);
+  }
+  
+  const interval = setInterval(update, 1000);
+  update();
+  
+  // スクリーンロックの状態を保持
+  let wakeLock = null;
+  
+  // ロックを取得する関数
+  const requestWakeLock = async () => {
+   try {
+    if ('wakeLock' in navigator) {
+     wakeLock = await navigator.wakeLock.request('screen');
+     console.log('Screen Wake Lock is active');
+     
+     // 画面が切り替わった（タブ移動など）後に戻ってきた際の再取得
+     wakeLock.addEventListener('release', () => {
+      console.log('Screen Wake Lock was released');
+     });
+    }
+   } catch (err) {
+    console.error(`${err.name}, ${err.message}`);
+   }
+  };
+  
+  // ユーザーが画面をタップ（タスク操作や開始ボタン）した時にロックを開始
+  document.addEventListener('click', () => {
+   if (!wakeLock) {
+    requestWakeLock();
+   }
+  }, { once: false });
+  
+  // 画面が再表示された時に再取得する処理
+  document.addEventListener('visibilitychange', async () => {
+   if (wakeLock !== null && document.visibilityState === 'visible') {
+    await requestWakeLock();
+   }
+  });
+ </script>
+</body>
+
 </html>
