@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kaya's Math Attack - Addition</title>
+    <title>Kaya's Math Attack - Addition Matrix</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #fff9f0; touch-action: manipulation; }
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #fff9f0; touch-action: manipulation; overflow: hidden; }
         #status-bar { width: 90%; display: flex; justify-content: space-between; font-size: 1.2rem; color: #555; margin-bottom: 10px; max-width: 400px; }
         #question { font-size: 6rem; font-weight: bold; color: #e67e22; margin-bottom: 20px; }
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 90%; max-width: 400px; }
@@ -15,12 +15,13 @@
             display: flex; align-items: center; justify-content: center;
         }
         .key:active { background: #e67e22; color: white; }
-        .key.zero { grid-column: span 3; padding: 15px; } /* 0が必要な場合用 */
         
-        #overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fff9f0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; text-align: center; }
-        #start-btn, #retry-btn { padding: 20px 40px; font-size: 2rem; cursor: pointer; background: #f1c40f; color: white; border: none; border-radius: 15px; box-shadow: 0 4px #d4ac0d; }
+        #overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 249, 240, 0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; text-align: center; padding: 20px; box-sizing: border-box; }
+        #start-btn, #retry-btn { padding: 20px 40px; font-size: 2rem; cursor: pointer; background: #f1c40f; color: white; border: none; border-radius: 15px; box-shadow: 0 4px #d4ac0d; margin-top: 20px; }
         #start-btn:active { box-shadow: none; transform: translateY(4px); }
-        #result-display { font-size: 2rem; color: #2c3e50; margin-bottom: 20px; }
+        #result-display { font-size: 1.5rem; color: #2c3e50; line-height: 1.6; }
+        .character-icon { font-size: 5rem; margin-bottom: 10px; }
+        .comment { font-weight: bold; color: #e67e22; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -36,15 +37,15 @@
     <div id="question">?+?</div>
     
     <div class="keypad">
-        <div class="key" onclick="checkAnswer(10)">10</div>
-        <div class="key" onclick="checkAnswer(11)">11</div>
-        <div class="key" onclick="checkAnswer(12)">12</div>
-        <div class="key" onclick="checkAnswer(13)">13</div>
-        <div class="key" onclick="checkAnswer(14)">14</div>
-        <div class="key" onclick="checkAnswer(15)">15</div>
-        <div class="key" onclick="checkAnswer(16)">16</div>
-        <div class="key" onclick="checkAnswer(17)">17</div>
-        <div class="key" onclick="checkAnswer(18)">18</div>
+        <div class="key" onclick="handleInput(10)">10</div>
+        <div class="key" onclick="handleInput(11)">11</div>
+        <div class="key" onclick="handleInput(12)">12</div>
+        <div class="key" onclick="handleInput(13)">13</div>
+        <div class="key" onclick="handleInput(14)">14</div>
+        <div class="key" onclick="handleInput(15)">15</div>
+        <div class="key" onclick="handleInput(16)">16</div>
+        <div class="key" onclick="handleInput(17)">17</div>
+        <div class="key" onclick="handleInput(18)">18</div>
     </div>
 
     <script>
@@ -52,6 +53,9 @@
         let currentProblem = null;
         let startTime = 0;
         let timerInterval = null;
+        let totalAttempts = 0;
+        let firstTryCorrect = 0;
+        let currentProblemAttempted = false;
 
         const questionEl = document.getElementById('question');
         const timerEl = document.getElementById('timerDisplay');
@@ -69,6 +73,8 @@
                     }
                 }
             }
+            totalAttempts = 0;
+            firstTryCorrect = 0;
         }
 
         function askNextQuestion() {
@@ -77,6 +83,7 @@
                 return;
             }
             
+            currentProblemAttempted = false;
             progressEl.textContent = `のこり: ${problems.length}もん`;
             const index = Math.floor(Math.random() * problems.length);
             currentProblem = problems[index];
@@ -84,19 +91,21 @@
 
             questionEl.textContent = currentProblem.q;
             
-            // 読み上げを「たす」に修正
             const uttr = new SpeechSynthesisUtterance(currentProblem.q.replace('+', 'たす') + 'は？');
             uttr.lang = 'ja-JP';
             window.speechSynthesis.cancel();
             window.speechSynthesis.speak(uttr);
         }
 
-        function checkAnswer(num) {
+        function handleInput(num) {
+            totalAttempts++;
             if (num === currentProblem.a) {
+                if (!currentProblemAttempted) firstTryCorrect++;
                 const correctUttr = new SpeechSynthesisUtterance("せいかい！");
                 window.speechSynthesis.speak(correctUttr);
                 askNextQuestion();
             } else {
+                currentProblemAttempted = true;
                 const wrongUttr = new SpeechSynthesisUtterance("ちがうよ");
                 window.speechSynthesis.speak(wrongUttr);
             }
@@ -104,8 +113,50 @@
 
         function finishGame() {
             clearInterval(timerInterval);
-            const totalTime = ((performance.now() - startTime) / 1000).toFixed(1);
-            resultDisplay.innerHTML = `ぜんもんせいかい！✨<br>タイム: ${totalTime}びょう`;
+            const totalTime = parseFloat(((performance.now() - startTime) / 1000).toFixed(1));
+            const accuracy = (firstTryCorrect / 36) * 100;
+            
+            // マトリックス判定
+            const isFast = totalTime <= 144; // 36問 * 4秒
+            const isAccurate = accuracy >= 80;
+
+            let char, name, comment, colors;
+
+            if (isFast && isAccurate) {
+                char = "🦄"; name = "ユニコーン";
+                comment = "しんじられないスピードとせいかくさ！きみは すうじの まほうつかいだね！";
+                colors = ['#ffccff', '#ccffff', '#ffffcc'];
+            } else if (!isFast && isAccurate) {
+                char = "🐦‍🔥"; name = "フェニックス";
+                comment = "じっくり かんがえて、ひとつも まちがえない つよさを かんじるよ。かっこいい！";
+                colors = ['#ff4500', '#ff8c00', '#ffd700'];
+            } else if (isFast && !isAccurate) {
+                char = "🐰"; name = "ウサギ";
+                comment = "とっても はやいね！つぎは、ちょっとだけ ゆっくりの ボタンをおすと もっとすごくなるよ！";
+                colors = ['#ffffff', '#ffc0cb', '#f0f0f0'];
+            } else {
+                char = "🐣"; name = "ヒヨコ";
+                comment = "さいごまで がんばったね！ひとつずつ、ゆっくりで だいじょうぶ。いっしょに つよくなろう！";
+                colors = ['#ffff00', '#ffa500', '#ffffff'];
+            }
+
+            // 演出の実行
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: colors
+            });
+
+            resultDisplay.innerHTML = `
+                <div class="character-icon">${char}</div>
+                <div>ランク：<strong>${name}</strong></div>
+                <div style="font-size: 1rem; margin-top: 10px;">
+                    タイム: ${totalTime}秒 (1問平均: ${(totalTime/36).toFixed(1)}秒)<br>
+                    せい答りつ: ${accuracy.toFixed(0)}%
+                </div>
+                <div class="comment">${comment}</div>
+            `;
             startBtn.textContent = "もういっかい！";
             overlay.style.display = 'flex';
         }
