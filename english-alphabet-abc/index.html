@@ -24,19 +24,22 @@
         .mode-select { margin-bottom: 20px; font-size: 1.2rem; color: #be185d; font-weight: bold; }
         #start-btn { padding: 20px 40px; font-size: 2rem; cursor: pointer; background: #db2777; color: white; border: none; border-radius: 15px; box-shadow: 0 4px #9d174d; }
         #start-btn:active { box-shadow: none; transform: translateY(4px); }
-        #result-display { font-size: 1.8rem; color: #2c3e50; margin-bottom: 20px; line-height: 1.4; }
         
-        /* チェックボックスを少し大きく */
+        /* 修正箇所：ホームボタンのスタイルを追加 */
+        .home-link { display: inline-block; margin-top: 20px; padding: 10px 20px; font-size: 1.2rem; color: #7f8c8d; text-decoration: none; border: 2px solid #bdc3c7; border-radius: 10px; }
+        
+        #result-display { font-size: 1.8rem; color: #2c3e50; margin-bottom: 20px; line-height: 1.4; }
         input[type="checkbox"] { transform: scale(1.5); margin-right: 10px; vertical-align: middle; }
     </style>
 </head>
 <body>
     <div id="overlay">
         <div id="result-display">🍎から🦓まで<br>ABCアタック！</div>
-        <div class="mode-select">
+        <div class="mode-select" id="mode-area">
             <label><input type="checkbox" id="emoji-mode-check">えもじだけモード（むずかしい）</label>
         </div>
         <button id="start-btn">スタート！</button>
+        <a href="https://kayag-ai.github.io/home-edu-apps/" class="home-link" id="home-btn">ホームにもどる</a>
     </div>
 
     <div id="status-bar">
@@ -78,6 +81,7 @@
         const progressEl = document.getElementById('progressDisplay');
         const overlay = document.getElementById('overlay');
         const startBtn = document.getElementById('start-btn');
+        const modeArea = document.getElementById('mode-area');
         const emojiModeCheck = document.getElementById('emoji-mode-check');
         const keypadEl = document.getElementById('keypad');
 
@@ -96,7 +100,6 @@
             problems = [...ABC_DATA].sort(() => Math.random() - 0.5);
         }
 
-        // ここが修正された askNext 関数
         function askNext() {
             if (problems.length === 0) {
                 finish();
@@ -104,7 +107,6 @@
             }
             current = problems.pop();
             
-            // 条件分岐：むずかしいモードなら文字を隠す
             if (isEmojiOnlyMode) {
                 charEl.style.visibility = 'hidden';
             } else {
@@ -139,12 +141,16 @@
             clearInterval(timerInterval);
             const totalTime = ((performance.now() - startTime) / 1000).toFixed(1);
             document.getElementById('result-display').innerHTML = `Clear! ✨<br>Time: ${totalTime}s`;
+            
+            // 修正箇所：リザルト時はモード選択を隠してスッキリさせる
+            modeArea.style.display = 'none';
+            
             startBtn.textContent = "Try Again!";
             overlay.style.display = 'flex';
         }
 
         startBtn.onclick = () => {
-            isEmojiOnlyMode = emojiModeCheck.checked; // モード判定
+            isEmojiOnlyMode = emojiModeCheck.checked;
             initProblems();
             overlay.style.display = 'none';
             startTime = performance.now();
