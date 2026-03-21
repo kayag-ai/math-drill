@@ -19,14 +19,10 @@
         #overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 249, 240, 0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; text-align: center; padding: 20px; box-sizing: border-box; }
         #start-btn { padding: 20px 40px; font-size: 2rem; cursor: pointer; background: #f1c40f; color: white; border: none; border-radius: 15px; box-shadow: 0 4px #d4ac0d; margin-top: 20px; }
         #start-btn:active { box-shadow: none; transform: translateY(4px); }
-        
-        /* ホームボタンのスタイル */
         .home-link { display: inline-block; margin-top: 20px; padding: 10px 20px; font-size: 1.2rem; color: #7f8c8d; text-decoration: none; border: 2px solid #bdc3c7; border-radius: 10px; }
-        
         #result-display { font-size: 1.5rem; color: #2c3e50; line-height: 1.6; }
         .character-icon { font-size: 5rem; margin-bottom: 10px; }
         .comment { font-weight: bold; color: #e67e22; margin-top: 10px; }
-        
         #debug-btn { position: fixed; bottom: 10px; right: 10px; padding: 8px 14px; font-size: 1.5rem; background: none; border: none; cursor: pointer; opacity: 0.4; color: #42445A; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; z-index: 100; }
     </style>
 </head>
@@ -39,7 +35,7 @@
 
     <div id="status-bar">
         <div id="timerDisplay">タイム: 0.0秒</div>
-        <div id="progressDisplay"></div>
+        <div id="progressDisplay">のこり: 36</div>
     </div>
     <div id="question">?+?</div>
     
@@ -69,6 +65,7 @@
 
         const questionEl = document.getElementById('question');
         const timerEl = document.getElementById('timerDisplay');
+        const progressEl = document.getElementById('progressDisplay');
         const overlay = document.getElementById('overlay');
         const startBtn = document.getElementById('start-btn');
         const resultDisplay = document.getElementById('result-display');
@@ -97,6 +94,8 @@
             }
             totalAttempts = 0;
             firstTryCorrect = 0;
+            // 初期表示を36にリセット
+            progressEl.textContent = `のこり: ${problems.length}`;
         }
 
         function speakThenDo(text, callback) {
@@ -116,6 +115,10 @@
                 return;
             }
             currentProblemAttempted = false;
+            
+            // ★修正箇所: 1つ選ぶ前の現在のリスト数が「のこり」です
+            progressEl.textContent = `のこり: ${problems.length}`;
+            
             const index = Math.floor(Math.random() * problems.length);
             currentProblem = problems[index];
             problems.splice(index, 1);
@@ -127,6 +130,7 @@
             totalAttempts++;
             if (num === currentProblem.a) {
                 if (!currentProblemAttempted) firstTryCorrect++;
+                // 正解のメッセージが流れた後に次の問題へ
                 speakThenDo("せいかい！", askNextQuestion);
             } else {
                 currentProblemAttempted = true;
@@ -173,7 +177,7 @@
                 colors = ['#ffffff', '#ffc0cb', '#f0f0f0'];
             } else {
                 char = "🐣"; name = "ヒヨコ";
-                comment = "さいごまで がんばったね！ひとつずつ、ゆっくりで だいじょうぶ。いっしょに つよくなろう！";
+                comment = "さいごまで がんばったね！ひとつずつ、ゆっくりで だいじょうぶ. いっしょに つよくなろう！";
                 colors = ['#ffff00', '#ffa500', '#ffffff'];
             }
 
@@ -183,7 +187,7 @@
                 <div class="character-icon">${char}</div>
                 <div>ランク：<strong>${name}</strong></div>
                 <div style="font-size: 1rem; margin-top: 10px;">
-                    タイム: ${totalTime}秒<br>せい答りつ: ${accuracy.toFixed(0)}%
+                    タイム: ${totalTime}秒<br>正答率: ${accuracy.toFixed(0)}%
                 </div>
                 <div class="comment">${comment}</div>
             `;
